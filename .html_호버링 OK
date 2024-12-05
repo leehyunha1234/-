@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Clone - Grid Layout</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: #cc0000;
+            color: white;
+            padding: 0 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            height: 56px;
+        }
+        .header-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            flex-grow: 1;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #f1f1f1;
+            padding: 1rem;
+            height: calc(100vh - 56px);
+            position: sticky;
+            top: 56px;
+        }
+        .sidebar-button {
+            display: none;
+            background-color: #cc0000;
+            color: white;
+            padding: 0.5rem;
+            margin: 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+        .content {
+            flex-grow: 1;
+        }
+        .video-grid {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        .video {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .video iframe {
+            display: block;
+            width: 100%;
+            height: 260px;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .video.playing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        .video:hover {
+            transform: scale(1.05);
+        }
+        .video-info {
+            padding: 0.5rem 1rem;
+        }
+        .video-title {
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .video-details {
+            color: #606060;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-button {
+                display: block;
+            }
+            .sidebar {
+                display: none;
+            }
+            .video iframe {
+                height: calc(100vw * 9 / 16);
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .sidebar {
+                display: block;
+            }
+            .video iframe {
+                height: calc((100vw - 240px) / 2 * 9 / 16);
+            }
+        }
+        @media (min-width: 1025px) {
+            .video-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .sidebar {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-logo">YouTube Clone</div>
+    </header>
+    <div class="sidebar-button" onclick="toggleSidebar()">Toggle Sidebar</div>
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <p>Sidebar content here</p>
+        </aside>
+        <main class="content">
+            <div class="video-grid" id="videoGrid">
+                <div class="video">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&controls=0&rel=0&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <p class="video-title">Video Title 1</p>
+                        <p class="video-details">1M views • 2 years ago</p>
+                    </div>
+                </div>
+                <div class="video">
+                    <iframe src="https://www.youtube.com/embed/9bZkp7q19f0?enablejsapi=1&controls=0&rel=0&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <p class="video-title">Video Title 2</p>
+                        <p class="video-details">3.5M views • 8 years ago</p>
+                    </div>
+                </div>
+                <div class="video">
+                    <iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ?enablejsapi=1&controls=0&rel=0&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <p class="video-title">Video Title 3</p>
+                        <p class="video-details">500K views • 1 year ago</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.style.display === 'block' || sidebar.style.display === '') {
+                sidebar.style.display = 'none';
+            } else {
+                sidebar.style.display = 'block';
+            }
+        }
+
+        let players = [];
+        function onYouTubeIframeAPIReady() {
+            document.querySelectorAll('.video iframe').forEach((iframe, index) => {
+                players[index] = new YT.Player(iframe, {
+                    events: {
+                        'onReady': (event) => {
+                            iframe.parentElement.addEventListener('mouseover', () => {
+                                event.target.playVideo();
+                                iframe.parentElement.classList.add('playing');
+                            });
+                            iframe.parentElement.addEventListener('mouseout', () => {
+                                event.target.pauseVideo();
+                                iframe.parentElement.classList.remove('playing');
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let videoGrid = document.getElementById('videoGrid');
+            let videoCount = 3;
+
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight) {
+                    loadMoreVideos();
+                }
+            });
+
+            function loadMoreVideos() {
+                for (let i = 0; i < 3; i++) {
+                    let videoDiv = document.createElement('div');
+                    videoDiv.classList.add('video');
+                    videoDiv.innerHTML = `
+                        <iframe width="100%" height="260" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&controls=0&rel=0&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 12px;"></iframe>
+                        <div class="video-info">
+                            <p class="video-title">Video Title ${++videoCount}</p>
+                            <p class="video-details">${Math.floor(Math.random() * 1000)}K views • ${Math.floor(Math.random() * 5) + 1} years ago</p>
+                        </div>
+                    `;
+                    videoGrid.appendChild(videoDiv);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
